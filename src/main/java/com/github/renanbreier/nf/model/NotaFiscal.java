@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "nota_fiscal")
@@ -25,6 +26,9 @@ public class NotaFiscal {
     @ManyToOne
     @JoinColumn(name = "cliente_codigo", referencedColumnName = "codigo")
     private Cliente cliente;
+
+    @OneToMany(mappedBy = "notaFiscal", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    private List<ItemNota> itens;
 
     public Long getId() {
         return id;
@@ -56,5 +60,13 @@ public class NotaFiscal {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public List<ItemNota> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemNota> itens) {
+        this.itens = itens;
     }
 }
