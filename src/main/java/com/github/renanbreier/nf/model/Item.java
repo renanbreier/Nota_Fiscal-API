@@ -22,7 +22,6 @@ public class Item {
     @NotNull
     private String descricao;
 
-    @NotEmpty
     @NotNull
     private BigDecimal valorUnitario;
 
