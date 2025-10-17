@@ -26,7 +26,7 @@ public class ClienteController {
         Optional<Cliente> cliente = clienteRepository.findById(id);
 
         if (cliente.isEmpty()) {
-            return ResponseEntity.status(404).body("Cliente não encontrado");
+            return ResponseEntity.status(404).body("Cliente com ID " + id +" não encontrado");
         }
         return ResponseEntity.ok(cliente.get());
     }
@@ -61,7 +61,7 @@ public class ClienteController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         if (!clienteRepository.existsById(id)) {
-            return ResponseEntity.status(404).body("Cliente não encontrado");
+            return ResponseEntity.status(404).body("Cliente com ID " + id + " não encontrado");
         }
         clienteRepository.deleteById(id);
         return ResponseEntity.ok().build();
