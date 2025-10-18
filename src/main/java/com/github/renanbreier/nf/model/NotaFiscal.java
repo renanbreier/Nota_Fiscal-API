@@ -15,11 +15,9 @@ public class NotaFiscal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
     @NotNull
     private int numeroNota;
 
-    @NotEmpty
     @NotNull
     private LocalDate dataEmissao;
 
