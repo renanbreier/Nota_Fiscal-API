@@ -1,5 +1,6 @@
 package com.github.renanbreier.nf.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,7 @@ public class NotaFiscal {
     private Cliente cliente;
 
     @OneToMany(mappedBy = "notaFiscal", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<ItemNota> itens;
 
     public Long getId() {

@@ -18,7 +18,7 @@ public class ClienteController {
 
     @GetMapping
     public ResponseEntity<List<Cliente>> findAll() {
-        return ResponseEntity.ok(clienteRepository.findAll());
+        return ResponseEntity.ok().body(clienteRepository.findAll());
     }
 
     @GetMapping("/{id}")
