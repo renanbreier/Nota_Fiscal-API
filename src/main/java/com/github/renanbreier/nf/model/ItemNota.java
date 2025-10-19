@@ -1,5 +1,6 @@
 package com.github.renanbreier.nf.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -14,23 +15,21 @@ public class ItemNota {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
     @NotNull
     private int sequencial;
 
     @ManyToOne
     @JoinColumn(name = "nota_id")
+    @JsonBackReference
     private NotaFiscal notaFiscal;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item itemNota;
 
-    @NotEmpty
     @NotNull
     private int quantidade;
 
-    @NotEmpty
     @NotNull
     @Column(name = "valor_total")
     private BigDecimal valorTotal;
