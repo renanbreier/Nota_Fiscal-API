@@ -23,10 +23,10 @@ public class NotaFiscal {
     private LocalDate dataEmissao;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_codigo", referencedColumnName = "codigo")
+    @JoinColumn(name = "cliente_codigo")
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "notaFiscal", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "notaFiscal", fetch = FetchType.LAZY,  cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ItemNota> itens;
 

@@ -1,13 +1,17 @@
 package com.github.renanbreier.nf.controller;
 
 import com.github.renanbreier.nf.model.Cliente;
+import com.github.renanbreier.nf.model.Item;
+import com.github.renanbreier.nf.model.ItemNota;
 import com.github.renanbreier.nf.model.NotaFiscal;
 import com.github.renanbreier.nf.repository.ClienteRepository;
+import com.github.renanbreier.nf.repository.ItemRepository;
 import com.github.renanbreier.nf.repository.NotaFiscalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +24,8 @@ public class NotaFiscalController {
 
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private ItemRepository itemRepository;
 
     @GetMapping
     public ResponseEntity<List<NotaFiscal>> findAll() {
@@ -38,11 +44,25 @@ public class NotaFiscalController {
     @PostMapping
     public ResponseEntity<?> save(@RequestBody NotaFiscal notaFiscal) {
         try {
-            Cliente cliente = (Cliente) clienteRepository.findByCodigo(notaFiscal.getCliente().getCodigo())
+            Cliente cliente = (Cliente) clienteRepository.findById(notaFiscal.getCliente().getId())
                     .orElseThrow(() -> new RuntimeException(
-                            "Cliente com código " + notaFiscal.getCliente().getCodigo() + " não encontrado"));
+                            "Cliente com ID " + notaFiscal.getCliente().getId() + " não encontrado"));
 
             notaFiscal.setCliente(cliente);
+
+            if (notaFiscal.getItens() != null && !notaFiscal.getItens().isEmpty()) {
+                for (ItemNota itemNota : notaFiscal.getItens()) {
+                    Item item = itemRepository.findById(itemNota.getItemNota().getId())
+                            .orElseThrow(() -> new RuntimeException("Item com ID " + itemNota.getItemNota().getId() + " não encontrado"));
+
+                    itemNota.setItemNota(item);
+                    itemNota.setNotaFiscal(notaFiscal);
+
+                    itemNota.setValorTotal(item.getValorUnitario()
+                            .multiply(new BigDecimal(itemNota.getQuantidade())));
+                }
+            }
+
             NotaFiscal novaNota = notaFiscalRepository.save(notaFiscal);
             return ResponseEntity.status(201).body(novaNota);
 
@@ -60,11 +80,31 @@ public class NotaFiscalController {
                         nota.setDataEmissao(notaAtualizada.getDataEmissao());
 
                         if (notaAtualizada.getCliente() != null &&
-                                notaAtualizada.getCliente().getCodigo() != null) {
-                            Cliente cliente = (Cliente) clienteRepository.findByCodigo(notaAtualizada.getCliente().getCodigo())
+                                notaAtualizada.getCliente().getId() != null) {
+                            Cliente cliente = (Cliente) clienteRepository.findById(notaAtualizada.getCliente().getId())
                                     .orElseThrow(() -> new RuntimeException(
-                                            "Cliente com código " + notaAtualizada.getCliente().getCodigo() + " não encontrado"));
+                                            "Cliente com ID " + notaAtualizada.getCliente().getId() + " não encontrado"));
                             nota.setCliente(cliente);
+                        }
+
+                        nota.getItens().clear();
+
+                        if (notaAtualizada.getItens() != null && !notaAtualizada.getItens().isEmpty()) {
+
+                            for (ItemNota itemNota : notaAtualizada.getItens()) {
+                                Item item = itemRepository.findById(itemNota.getItemNota().getId())
+                                        .orElseThrow(() -> new RuntimeException(
+                                                "Item com ID " + itemNota.getItemNota().getId() + " não encontrado"));
+
+                                itemNota.setItemNota(item);
+                                itemNota.setNotaFiscal(nota);
+
+                                itemNota.setValorTotal(
+                                        item.getValorUnitario().multiply(new BigDecimal(itemNota.getQuantidade()))
+                                );
+
+                                nota.getItens().add(itemNota);
+                            }
                         }
 
                         NotaFiscal notaSalva = notaFiscalRepository.save(nota);
