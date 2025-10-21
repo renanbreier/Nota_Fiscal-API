@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/item-nota")
+@RequestMapping("/item-nota")
 public class ItemNotaController {
 
     @Autowired
